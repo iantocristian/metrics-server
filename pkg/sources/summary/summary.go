@@ -196,20 +196,23 @@ func (src *summaryMetricsSource) decodePodStats(podStats *stats.PodStats, target
 
 func decodeCPU(target *resource.Quantity, cpuStats *stats.CPUStats) error {
 	if cpuStats == nil || cpuStats.UsageNanoCores == nil {
-		return fmt.Errorf("missing cpu usage metric")
+	    *target = *uint64Quantity(0, 0);
+	}
+	else {
+	    *target = *uint64Quantity(*cpuStats.UsageNanoCores, -9)
 	}
 
-	*target = *uint64Quantity(*cpuStats.UsageNanoCores, -9)
 	return nil
 }
 
 func decodeMemory(target *resource.Quantity, memStats *stats.MemoryStats) error {
 	if memStats == nil || memStats.WorkingSetBytes == nil {
-		return fmt.Errorf("missing memory usage metric")
+        *target = *uint64Quantity(0, 0)
 	}
-
-	*target = *uint64Quantity(*memStats.WorkingSetBytes, 0)
-	target.Format = resource.BinarySI
+	else {
+        *target = *uint64Quantity(*memStats.WorkingSetBytes, 0)
+        target.Format = resource.BinarySI
+	}
 
 	return nil
 }
